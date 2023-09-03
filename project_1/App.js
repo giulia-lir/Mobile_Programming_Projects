@@ -17,7 +17,7 @@ export default function App() {
       <Text style={styles.titleStyle}>= Hello User =</Text>
       <TextInput style={styles.inputFieldStyle} onChangeText={text => setText(text)} value={text} />
       <Pressable style={styles.buttonStyle} onPress={buttonPressed}>
-        <Text style={styles.pressableTextStyle}>Fancy pressable</Text>
+        <Text style={styles.pressableTextStyle}>Fancy button</Text>
       </Pressable>
       <Button onPress={buttonPressed} title="Lame button" />
       <StatusBar style="auto" />

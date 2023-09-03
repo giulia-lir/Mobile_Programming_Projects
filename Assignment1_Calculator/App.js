@@ -1,10 +1,72 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
 
-export default function App() {
+
+export default function Calculator() {
+  const [num1, setNum1] = useState('');
+  const [num2, setNum2] = useState('');
+  const [result, setResult] = useState('');
+  const [history, setHistory] = useState([]);
+
+  const calculateSum = () => {
+    if (num1 !== '' && num2 !== '') {
+      const sum = parseFloat(num1) + parseFloat(num2);
+      setResult(sum);
+      addToHistory(sum);
+      setNum1(sum.toString());
+      setNum2('');
+    } else {
+      setResult('??');
+    }
+  }
+
+  const calculateSubtraction = () => {
+    if (num1 !== '' && num2 !== '') {
+      const subtraction = parseFloat(num1) - parseFloat(num2);
+      setResult(subtraction);
+      addToHistory(subtraction);
+      setNum1(subtraction.toString());
+      setNum2('');
+    } else {
+      setResult('??');
+    }
+  }
+
+  const addToHistory = (entry) => {
+    // Keep only the latest 5 entries in history
+    setHistory((prevHistory) => [
+      { key: Date.now().toString(), entry },
+      ...prevHistory.slice(0, 4), // Limit to 5 entries
+    ]);
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      <Text style={styles.resultText}>Result: {result}</Text>
+      <TextInput
+        placeholder="Enter number 1"
+        keyboardType="numeric"
+        onChangeText={(text) => setNum1(text)}
+        value={num1}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Enter number 2"
+        keyboardType="numeric"
+        onChangeText={(text) => setNum2(text)}
+        value={num2}
+        style={styles.input}
+      />
+      <Button title=" + " onPress={calculateSum} />
+      <Button title=" - " onPress={calculateSubtraction} />
+      <Text style={{ marginTop: 20 }}>{result}</Text>
+      <Text style={{ marginTop: 20, fontWeight: 'bold' }}>History:</Text>
+      <FlatList
+        data={history}
+        renderItem={({ item }) => <Text>{item.entry}</Text>}
+        keyExtractor={(item) => item.key}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -12,9 +74,19 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 250,
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center'
   },
+  resultText: {
+    fontSize: 30,
+    fontWeight: 'bold'
+  },
+  input: {
+    marginBottom: 5,
+    width: 200,
+    borderColor: 'gray',
+    borderWidth: 1
+  }
 });

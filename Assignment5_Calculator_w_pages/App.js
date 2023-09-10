@@ -1,15 +1,18 @@
 import 'react-native-gesture-handler';
+import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Calculator from "./components";
 import History from "./components";
 
+const Stack = createStackNavigator();
+
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <Stack.Navigator>
+        <Stack.Screen name="Calculator" component={Calculator} />
+        <Stack.Screen name="History" component={History} />
+      </Stack.Navigator>
   );
 }
 

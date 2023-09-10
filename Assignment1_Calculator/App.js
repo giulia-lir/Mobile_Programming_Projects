@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, Pressable, TextInput, FlatList } from 'react-native';
 
 
 export default function Calculator() {
@@ -13,7 +13,7 @@ export default function Calculator() {
     if (num1 !== '' && num2 !== '') {
       const sum = parseFloat(num1) + parseFloat(num2);
       setResult(sum);
-      addToHistory(sum);
+      addToHistory(`${num1} + ${num2} = ${sum}`);
       setNum1(sum.toString());
       setNum2('');
     } else {
@@ -25,7 +25,7 @@ export default function Calculator() {
     if (num1 !== '' && num2 !== '') {
       const subtraction = parseFloat(num1) - parseFloat(num2);
       setResult(subtraction);
-      addToHistory(subtraction);
+      addToHistory(`${num1} - ${num2} = ${subtraction}`);
       setNum1(subtraction.toString());
       setNum2('');
     } else {
@@ -58,8 +58,10 @@ export default function Calculator() {
         value={num2}
         style={styles.input}
       />
-      <Button title=" + " onPress={calculateSum} />
-      <Button title=" - " onPress={calculateSubtraction} />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' , width: 100 }}>
+        <Button title=" + " onPress={calculateSum} />
+        <Button title=" - " onPress={calculateSubtraction} />
+      </View>
       <Text style={{ marginTop: 20 }}>{result}</Text>
       <Text style={{ marginTop: 20, fontWeight: 'bold' }}>History:</Text>
       <FlatList

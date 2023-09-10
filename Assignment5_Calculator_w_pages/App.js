@@ -2,8 +2,8 @@ import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Calculator from "./components";
-import History from "./components";
+import Calculator from "./components/Calculator";
+import History from "./components/History";
 
 const Stack = createStackNavigator();
 

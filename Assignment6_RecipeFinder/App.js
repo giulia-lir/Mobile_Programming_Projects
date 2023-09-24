@@ -18,7 +18,6 @@ export default function App() {
     .catch(err => {
       setIsVisible(false);
       Alert.alert('Error', 'Something went wrong')
-      console.log(err)
     });
   }
  

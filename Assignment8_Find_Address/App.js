@@ -1,40 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {
-  const initial = {
-    latitude: 60.200692,
-    longitude: 24.934302,
-    latitudeDelta: 0.0322,
-    longitudeDelta: 0.0221
-  };
 
-  const londonCoordinates = {
-    latitude: 51.5074,
-    longitude: -0.1278,
-    latitudeDelta: 0.1,
-    longitudeDelta: 0.1
-  };
+  const [address, setAddress] = useState('');
+  const [result, setResult] = useState({
+    lat: 51.5074,
+    lng: -0.1278
+  });
 
+  const fetchAddress = () => {
+    fetch(url + "?key=" + apiKey + "&location=" + address)
+    .then(response => response.json())
+    .then(data => {
+      setResult(data.results[0].locations[0].latLng)
+    })
+    .catch(err => {
+      Alert.alert('Error', 'Something went wrong')
+    });
+  }
+
+  const url = process.env.EXPO_PUBLIC_API_URL;
+  const apiKey = process.env.EXPO_PUBLIC_API_KEY;
   const coordinates = {
-    latitude: 60.201373,
-    longitude: 24.934041
-  };
+    latitude: result.lat,
+    longitude: result.lng,
+    latitudeDelta: 0.004,
+    longitudeDelta: 0.004
+  }
 
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        initialRegion={londonCoordinates}>
+        region={coordinates}>
           <Marker
-            coordinate={londonCoordinates}
-            title='London'
+            coordinate={coordinates}
+            title='Here'
           />
       </MapView>
-      <View style={styles.inputField}>
-        <Text>Address</Text>
-        <TextInput placeholder="Enter an address"></TextInput>
+      <View style={styles.searchField}>
+        <Text>Find address:</Text>
+        <TextInput
+          placeholder="Enter an address"
+          value={address}
+          onChangeText={(text) => setAddress(text)}
+        />
+        <Button title="find" onPress={fetchAddress} />
       </View>
     </View>
   );
@@ -46,14 +59,15 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '85%',
+    flex: 4
   },
-  inputField: {
-    height: 100,
+  searchField: {
+    flex: 1,
     width: '100%',
     borderRadius: 50,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'space-evenly'
   }
 });

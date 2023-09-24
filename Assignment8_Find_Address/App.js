@@ -10,6 +10,8 @@ export default function App() {
     lng: -0.1278
   });
 
+  // The current fetching only gets the first address found, this can be improved for when handling multiple addresses
+
   const fetchAddress = () => {
     fetch(url + "?key=" + apiKey + "&location=" + address)
     .then(response => response.json())

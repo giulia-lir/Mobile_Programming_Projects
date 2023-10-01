@@ -16,7 +16,16 @@ export default function App() {
     fetch(url + "?key=" + apiKey + "&location=" + address)
     .then(response => response.json())
     .then(data => {
-      setResult(data.results[0].locations[0].latLng)
+      const latLang = data.results[0].locations.map((location) => location.latLng)
+      setResult(latLang)
+      console.log(latLang)
+      //setResult(data.results[0].locations[0].latLng)
+      //const locationsArray = data.results.map((result) => ({
+        //latLng: result.locations.map((location) => location.latLng.latLng),
+        // Add other properties you want from each location here
+     // }));
+      //setResult(locationsArray)
+      //console.log(locationsArray)
     })
     .catch(err => {
       Alert.alert('Error', 'Something went wrong')

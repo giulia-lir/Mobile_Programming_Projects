@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
-import * as SQLite from 'expo-sqlite';
+import React, { useState, useEffect } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+//import * as SQLite from 'expo-sqlite';
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 //const db = SQLite.openDatabase('shoppinglistdb.db');
@@ -10,15 +10,37 @@ export default function App() {
   const [input, setInput] = useState("");
   const [shoppingList, setShoppingList] = useState([]);
 
+  useEffect(() => {
+    loadShoppingList();
+  }, []);
+
+  const loadShoppingList = async () => {
+    try {
+      const storedList = await AsyncStorage.getItem('fetchingList');
+      if (storedList !== null) {
+        setShoppingList(JSON.parse(storedList));
+      }
+    } catch (error) {
+      console.error('Error loading data from AsyncStorage:', error);
+    }
+  };
+
+  const saveShoppingList = async (list) => {
+    try {
+      const jsonList = JSON.stringify(list)
+      await AsyncStorage.setItem('fetchingList', jsonList);
+    } catch (error) {
+      console.error('Error saving data to AsyncStorage:', error);
+    }
+  };
+
   const addInput = () => {
     if (input.trim() != "") {
-      setShoppingList([...shoppingList, input]);
+      const updatedList = [...shoppingList, input];
+      setShoppingList(updatedList);
+      saveShoppingList(updatedList);
       setInput("");
     }
-  }
-
-  const clearItems = () => {
-    setShoppingList([]);
   }
 
   return (
@@ -30,8 +52,7 @@ export default function App() {
         value={input}
       />
       <View style={styles.buttonRow}>
-        <Button title="Add" onPress={addInput} />
-        <Button title="Clear" onPress={clearItems} />
+        <Button title="Save" onPress={addInput} />
       </View>
       <Text style={styles.itemsText}>Items:</Text>
       <FlatList

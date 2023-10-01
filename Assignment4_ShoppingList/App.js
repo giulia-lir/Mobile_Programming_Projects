@@ -9,7 +9,6 @@ export default function App() {
   const addInput = () => {
     if (input.trim() != "") {
       setShoppingList([...shoppingList, input]);
-      console.log(input)
       setInput("");
     }
   }

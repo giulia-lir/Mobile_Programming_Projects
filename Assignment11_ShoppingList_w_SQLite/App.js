@@ -1,5 +1,9 @@
 import React, { useState } from "react";
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import * as SQLite from 'expo-sqlite';
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+
+//const db = SQLite.openDatabase('shoppinglistdb.db');
 
 export default function App() {
 

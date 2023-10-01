@@ -1,64 +1,73 @@
 import React, { useState, useEffect } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-//import * as SQLite from 'expo-sqlite';
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as SQLite from 'expo-sqlite';
 
-//const db = SQLite.openDatabase('shoppinglistdb.db');
+const db = SQLite.openDatabase('shoppinglistdb.db');
 
 export default function App() {
-
-  const [input, setInput] = useState("");
+  const [product, setProduct] = useState('');
+  const [amount, setAmount] = useState('');
   const [shoppingList, setShoppingList] = useState([]);
 
   useEffect(() => {
-    loadShoppingList();
+    db.transaction(tx => {
+      tx.executeSql('create table if not exists grocery (id integer primary key not null, product text, amount text);');
+    }, () => console.error("Error when creating DB"), updateList); 
   }, []);
 
-  const loadShoppingList = async () => {
-    try {
-      const storedList = await AsyncStorage.getItem('fetchingList');
-      if (storedList !== null) {
-        setShoppingList(JSON.parse(storedList));
-      }
-    } catch (error) {
-      console.error('Error loading data from AsyncStorage:', error);
-    }
-  };
+  const saveProduct = () => {
+    db.transaction(tx => {
+        tx.executeSql('insert into grocery (product, amount) values (?, ?);', [product, amount]);    
+      }, null, updateList
+    )
+    setProduct("")
+    setAmount("")
+  }
 
-  const saveShoppingList = async (list) => {
-    try {
-      const jsonList = JSON.stringify(list)
-      await AsyncStorage.setItem('fetchingList', jsonList);
-    } catch (error) {
-      console.error('Error saving data to AsyncStorage:', error);
-    }
-  };
+  const updateList = () => {
+    db.transaction(tx => {
+      tx.executeSql('select * from grocery;', [], (_, { rows }) =>
+        setShoppingList(rows._array)
+      ); 
+    });
+  }
 
-  const addInput = () => {
-    if (input.trim() != "") {
-      const updatedList = [...shoppingList, input];
-      setShoppingList(updatedList);
-      saveShoppingList(updatedList);
-      setInput("");
-    }
+  const deleteItem = (id) => {
+    db.transaction(
+      tx => {
+        tx.executeSql('delete from grocery where id = ?;', [id]);
+      }, null, updateList
+    )    
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Shopping List:</Text>
+      <Text style={styles.title}>Shopping List</Text>
       <TextInput 
         style={styles.inputField}
-        onChangeText={text => setInput(text)}
-        value={input}
+        placeholder="Product"
+        onChangeText={text => setProduct(text)}
+        value={product}
       />
-      <View style={styles.buttonRow}>
-        <Button title="Save" onPress={addInput} />
-      </View>
+      <TextInput 
+        style={styles.inputField}
+        placeholder="Amount"
+        onChangeText={text => setAmount(text)}
+        value={amount}
+      />
+      <Button title="Save" onPress={saveProduct} />
       <Text style={styles.itemsText}>Items:</Text>
       <FlatList
         style={styles.listSection}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({ item }) =>
+          <View style={styles.listItemsView}>
+            <Text>{item.product}, {item.amount}</Text>
+            <Text style={{color: '#0000ff'}} onPress={() => deleteItem(item.id)}>Bought</Text>
+          </View>
+        }
         data={shoppingList}
-        renderItem={({ item }) => <Text style={styles.itemsText}>{item}</Text>}
+        showsVerticalScrollIndicator={true}
       />
     </View>
   );
@@ -82,19 +91,21 @@ const styles = StyleSheet.create({
     width: 200,
     padding: 5
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: 200,
-    marginTop: 20,
-    marginBottom: 20
-  },
   itemsText: {
-    fontSize: 20
+    fontSize: 20,
+    marginTop: 10
   },
   listSection: {
     maxHeight: 250,
     width: '80%',
     marginTop: 15
+  },
+  listItemsView: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: 'grey',
+    justifyContent: 'space-between',
+    alignItems: 'space-evenly',
+    padding: 5
   }
 });

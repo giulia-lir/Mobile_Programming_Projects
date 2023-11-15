@@ -5,6 +5,7 @@ export default function Home() {
     return (
         <View>
             <Text style={styles.fontStyle}>This is the Home page</Text>
+            <Text>Testing more</Text>
         </View>
     );
 }

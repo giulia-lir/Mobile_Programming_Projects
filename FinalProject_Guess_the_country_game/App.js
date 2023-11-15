@@ -10,7 +10,11 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator style={styles.navigatorTabsStyle}>
+      <Tab.Navigator screenOptions={{
+          tabBarStyle: styles.navigatorTabsStyle, // overall style
+          // tabStyle: styles.tabStyle,  specific tab style
+          tabBarLabelStyle: styles.tabFontStyle,
+        }}>
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
@@ -28,8 +32,12 @@ const styles = StyleSheet.create({
   },
   navigatorTabsStyle: {
     marginTop: 50,
+    backgroundColor: '#40E0D0',
   },
-  tabStyle: {
-    backgroundColor: 'pink',
-  },
+  tabFontStyle: {
+    fontStyle: 'italic',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black'
+  }
 });
